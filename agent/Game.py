@@ -46,27 +46,32 @@ class Game:
         return shot.astype(np.float).ravel(), score, done
 
     def is_done(self, shot):
-        blueidx = shot[:, :] < 24
-        notblueidx = shot[:, :] >= 24
-        shot[blueidx] = 255
-        shot[notblueidx] = 0
-        np.savetxt('sample_shot', shot[15:20,66:])
-        mask = np.array([[0,0,255],[0,255,255],[0,255,255],[0,255,255],[0,0,255],[0,0,255]])
-        return np.array_equal(shot[15:21,66:], mask)
+        # blueidx = shot[:, :] < 24
+        # notblueidx = shot[:, :] >= 24
+        # shot[blueidx] = 255
+        # shot[notblueidx] = 0
+        # np.savetxt('sample_shot', shot[15:20,66:])
+        # mask = np.array([[0,0,255],[0,255,255],[0,255,255],[0,255,255],[0,0,255],[0,0,255]])
+        # return np.array_equal(shot[15:21,66:], mask)
+        # if self.agent.game_ended():
+        #     print('ended')
+        return self.agent.game_ended()
 
     def get_score(self):
-        with mss.mss() as sct:
-            shot = sct.grab({"top": 155, "left": 140, "width": 350, "height": 70})
-            img = ~(np.array(shot)[:,:,0]) #removes rgb and inverts colors
-            img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)[1] #threshold to remove color artifacts and leave it black and white
-            score = pytesseract.image_to_string(image=img)
-            digits_rgx = re.compile("-?[0-9]+.?[0-9]")
-            result = digits_rgx.findall(score)
-            if len(result) > 0:
-                score = result[0]
-            else:
-                score = 0
-        return float(score)
+        # with mss.mss() as sct:
+        #     shot = sct.grab({"top": 155, "left": 140, "width": 350, "height": 70})
+        #     img = ~(np.array(shot)[:,:,0]) #removes rgb and inverts colors
+        #     img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)[1] #threshold to remove color artifacts and leave it black and white
+        #     score = pytesseract.image_to_string(image=img)
+        #     digits_rgx = re.compile("-?[0-9]+.?[0-9]")
+        #     result = digits_rgx.findall(score)
+        #     if len(result) > 0:
+        #         score = result[0]
+        #     else:
+        #         score = 0
+        # return float(score)
+        print(self.agent.get_score())
+        return self.agent.get_score()
 
     def get_screen_shot_timed(self):
         start = time.time()
@@ -81,7 +86,7 @@ class Game:
             TODO:
             TEST ONLY GRAYSCALE
             this processing might not be useful since the important data is in the difference between frames
-           
+
             img = np.array(shot)
             img[:, :, 2] = 0
             img[:, :, 1] = 0
@@ -90,7 +95,7 @@ class Game:
             img[blueidx] = 255
             img[notblueidx] = 0
             img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            
+
              """
             img = np.array(shot)[:,:,0]
             img = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)

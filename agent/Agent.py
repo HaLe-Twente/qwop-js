@@ -25,8 +25,8 @@ class Agent:
         chrome_opts.add_experimental_option('prefs', chrome_prefs)
         self.driver = webdriver.Chrome(executable_path = './chrome-driver/chromedriver', chrome_options = chrome_opts)
         self.driver.get('localhost:3000')
-        self.canvas = self.driver.find_element_by_id('game-canvas')
-        self.canvas_size = {"w":600, "h":400}
+        self.canvas = self.driver.find_element_by_id('window1')
+        self.canvas_size = {"w":640, "h":400}
         self.is_paused = False
         self.keyboard = Controller()
 
@@ -66,7 +66,7 @@ class Agent:
         self.keyboard.release(Key.space)
 
     def start_game(self):
-        self.canvas = self.driver.find_element_by_id('game-canvas')
+        self.canvas = self.driver.find_element_by_id('window1')
         self.canvas.click()
 
     def click_tutorial(self):
@@ -94,3 +94,9 @@ class Agent:
 
     def screen_shot(self):
         return self.canvas.screenshot_as_base64
+
+    def game_ended(self):
+        return self.driver.execute_script("return window.gameEnded;")
+
+    def get_score(self):
+        return self.driver.execute_script("return window.score;")
