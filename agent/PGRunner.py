@@ -12,7 +12,7 @@ import pdb
 
 H_2 = 200
 H_1 = 300
-D = 80 * 69
+D = 160 * 138
 
 gamma = 0.99  # discount factor
 learning_rate = 1e-3
@@ -21,7 +21,7 @@ END_GAME_FLAG = 1210
 resume = False
 model_name = 'qwop.torch.model'
 
-
+#22080
 class Policy(nn.Module):
 
     def __init__(self):
@@ -58,9 +58,7 @@ def main():
 
     env = Game()
     env.start()
-
     observation, reward, done = env.execute_action('n')
-
     prev_x = None
     curr_x = observation
     reward_pool = []
@@ -81,7 +79,6 @@ def main():
             x_diff = curr_x - prev_x if prev_x is not None else curr_x
             prev_x = curr_x
             x = Variable(torch.from_numpy(x_diff).float())
-
             forward = policy(x)
             out_dist = Categorical(forward)
             action = out_dist.sample()
@@ -90,10 +87,10 @@ def main():
 
             if done: in_game_step = 0
 
-            if in_game_step > 0 and in_game_step % 100 == 0:
-                print('should have reloaded')
-                reward = env.get_score()
-                env.soft_reload()
+            # if in_game_step > 0 and in_game_step % 100 == 0:
+            #     print('should have reloaded')
+            #     reward = env.get_score()
+            #     env.soft_reload()
 
             prob_pool.append(out_dist.log_prob(action))
 

@@ -1,4 +1,5 @@
 from Agent import Agent
+from GameEnv import ActionSpace, ObservationSpace
 import numpy as np
 import logging
 import time
@@ -8,10 +9,11 @@ import mss
 import re
 
 class Game:
-
     def __init__(self):
         self.agent = Agent()
         self.game_steps = 0
+        self.action_space = ActionSpace(5)
+        self.observation_space = ObservationSpace(22080)
 
     def start(self):
         self.agent.start_game()
@@ -24,6 +26,12 @@ class Game:
         self.agent.start_game()
         return self.execute_action('n')
 
+    def reset(self):
+        self.game_steps = 0
+        self.agent.hard_reload()
+        self.agent.start_game()
+        return self.execute_action('n')[0]
+
     def soft_reload(self):
         self.game_steps = 0
         self.agent.reload()
@@ -34,6 +42,24 @@ class Game:
         #self.agent.unpause()
         for char in action:
             getattr(self.agent, char)()
+        shot = self.get_screen_shot()
+        #self.agent.pause()
+        done = self.is_done(shot)
+        score = 0.0
+        if done:
+            distance_score = self.get_score()
+            time_score = - (self.game_steps/(abs(distance_score)+1e5)) # The higher the pace, the slowest it goes
+            score = distance_score + time_score
+            self.soft_reload()
+        return shot.astype(np.float).ravel(), score, done
+
+    def step(self, action):
+        self.agent.start_game()
+        self.game_steps += 1
+        #self.agent.unpause()
+        # for char in action:
+        #     getattr(self.agent, char)()
+        self.agent.step(action)
         shot = self.get_screen_shot()
         #self.agent.pause()
         done = self.is_done(shot)
