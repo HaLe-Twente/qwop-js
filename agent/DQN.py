@@ -20,15 +20,14 @@ class DQNAgent:
         if self.use_conv:
             self.path = 'saved-models/qwop_cnn.game.model'
             self.model = ConvDQN(env.observation_space.shape, env.action_space.n).to(self.device)
-            if resume:
-                self.model.load_state_dict(torch.load(self.path))
-                self.model.eval()
+
         else:
             self.path = 'saved-models/qwop_nn.game.model'
             self.model = DQN(env.observation_space.shape, env.action_space.n).to(self.device)
-            if resume:
-                self.model.load_state_dict(torch.load(self.path))
-                self.model.eval()
+
+        if resume:
+            self.model.load_state_dict(torch.load(self.path))
+            self.model.eval()
 
         self.optimizer = torch.optim.Adam(self.model.parameters())
         self.MSE_loss = nn.MSELoss()

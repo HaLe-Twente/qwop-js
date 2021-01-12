@@ -3,8 +3,8 @@ from Game import Game
 from DQN import DQNAgent
 from common.utils import mini_batch_train
 
-env_id = "CartPole-v0"
-MAX_EPISODES = 1000
+# env_id = "CartPole-v0"
+MAX_EPISODES = 100
 MAX_STEPS = 500
 BATCH_SIZE = 32
 

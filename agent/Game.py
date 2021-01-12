@@ -8,12 +8,16 @@ import cv2
 import mss
 import re
 
+WIDTH = 640
+HEIGT = 400
+SPACE = 64000
+
 class Game:
     def __init__(self):
         self.agent = Agent()
         self.game_steps = 0
         self.action_space = ActionSpace(5)
-        self.observation_space = ObservationSpace(22080)
+        self.observation_space = ObservationSpace(SPACE) # 640*400*0.25
 
     def start(self):
         self.agent.start_game()
@@ -106,7 +110,8 @@ class Game:
 
     def get_screen_shot(self, render = False):
         with mss.mss() as sct:
-            shot = sct.grab({"top": 185, "left": 190, "width": 275, "height": 320})
+            monitor = {"top": 175, "left": 20, "width": WIDTH, "height": HEIGT}
+            shot = sct.grab(monitor)
             """
             TODO:
             TEST ONLY GRAYSCALE
@@ -120,13 +125,14 @@ class Game:
             img[blueidx] = 255
             img[notblueidx] = 0
             img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-
              """
             img = np.array(shot)[:,:,0]
             img = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)
+            # Grab the data
+            # Save to the picture file
+            # mss.tools.to_png(shot.rgb, shot.size, output='12345.png')
             if render: self.render(img)
         return img
 
     def render(self, img):
-        cv2.imshow('window', img)
         cv2.waitKey(1)
