@@ -8,7 +8,7 @@ from Model import ConvDQN, DQN
 
 class DQNAgent:
 
-    def __init__(self, env, use_conv=True, learning_rate=3e-4, gamma=0.99, buffer_size=10000):
+    def __init__(self, env, use_conv=True, learning_rate=3e-4, gamma=0.99, buffer_size=10000, resume=False):
         self.env = env
         self.learning_rate = learning_rate
         self.gamma = gamma
@@ -18,9 +18,17 @@ class DQNAgent:
 
         self.use_conv = use_conv
         if self.use_conv:
+            self.path = 'saved-models/qwop_cnn.game.model'
             self.model = ConvDQN(env.observation_space.shape, env.action_space.n).to(self.device)
+            if resume:
+                self.model.load_state_dict(torch.load(self.path))
+                self.model.eval()
         else:
+            self.path = 'saved-models/qwop_nn.game.model'
             self.model = DQN(env.observation_space.shape, env.action_space.n).to(self.device)
+            if resume:
+                self.model.load_state_dict(torch.load(self.path))
+                self.model.eval()
 
         self.optimizer = torch.optim.Adam(self.model.parameters())
         self.MSE_loss = nn.MSELoss()
@@ -59,3 +67,6 @@ class DQNAgent:
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+
+    def save_model(self):
+        torch.save(self.model.state_dict(), self.path)

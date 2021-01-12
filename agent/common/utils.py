@@ -97,7 +97,7 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
                 break
 
             state = next_state
-
+        agent.save_model()
     return episode_rewards
 
 def mini_batch_train_frames(env, agent, max_frames, batch_size):

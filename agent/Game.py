@@ -63,11 +63,10 @@ class Game:
         shot = self.get_screen_shot()
         #self.agent.pause()
         done = self.is_done(shot)
-        score = 0.0
+        distance_score = self.get_score() or 0
+        time_score = - (self.game_steps/(abs(distance_score)+1e5)) # The higher the pace, the slowest it goes
+        score = distance_score + time_score
         if done:
-            distance_score = self.get_score()
-            time_score = - (self.game_steps/(abs(distance_score)+1e5)) # The higher the pace, the slowest it goes
-            score = distance_score + time_score
             self.soft_reload()
         return shot.astype(np.float).ravel(), score, done
 
