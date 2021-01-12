@@ -51,6 +51,7 @@ class DNQAgent:
         next_state = self.getimage()
         return next_state, reward, done
 
+    #Doesn't work yet
     def train(self, sample_size):
         #try:
             batch = (self.buffer.sample(sample_size))
@@ -99,13 +100,8 @@ class DNQAgent:
                 old_dist = dist
                 self.update_image_memory(next_state)
                 self.buffer.push(old_memory, action, reward, self.image_memory, done)
-                #print(reward)
-                #print("score: ", self.env.agent.get_score())
 
 
-
-                # lets print everything in one line:
-                # print(t, next_state, reward, done, info, action)
                 if done:
                     break
             #self.train(2)
