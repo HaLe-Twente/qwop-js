@@ -1,4 +1,4 @@
-from Game import Game
+from agent.Game import Game
 
 import numpy as np
 import torch
@@ -12,7 +12,7 @@ import pdb
 
 H_2 = 200
 H_1 = 300
-D = 80 * 69
+D = 275*275
 
 gamma = 0.99  # discount factor
 learning_rate = 1e-3
@@ -90,7 +90,7 @@ def main():
 
             if done: in_game_step = 0
 
-            if in_game_step > 0 and in_game_step % 100 == 0:
+            if in_game_step > 0 and in_game_step % 1000 == 0:
                 print('should have reloaded')
                 reward = env.get_score()
                 env.soft_reload()

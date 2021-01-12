@@ -54,6 +54,34 @@ class Agent:
         time.sleep(0.08)
         self.keyboard.release('p')
 
+    def q_o(self):
+        self.keyboard.press('q')
+        self.keyboard.press('o')
+        time.sleep(0.08)
+        self.keyboard.release('q')
+        self.keyboard.release('o')
+
+    def q_p(self):
+        self.keyboard.press('q')
+        self.keyboard.press('p')
+        time.sleep(0.08)
+        self.keyboard.release('q')
+        self.keyboard.release('p')
+
+    def w_o(self):
+        self.keyboard.press('w')
+        self.keyboard.press('o')
+        time.sleep(0.08)
+        self.keyboard.release('w')
+        self.keyboard.release('o')
+
+    def w_p(self):
+        self.keyboard.press('w')
+        self.keyboard.press('p')
+        time.sleep(0.08)
+        self.keyboard.release('w')
+        self.keyboard.release('p')
+
     def r(self):
         choice = np.random.choice(['q','w','o','p'])
         self.keyboard.press(choice)
@@ -99,4 +127,8 @@ class Agent:
         return self.driver.execute_script("return window.gameEnded;")
 
     def get_score(self):
-        return self.driver.execute_script("return window.score;")
+        score = self.driver.execute_script("return window.score;")
+        if score is None:
+            score = 0
+        return score
+

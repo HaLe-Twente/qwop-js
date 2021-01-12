@@ -1,4 +1,4 @@
-from Agent import Agent
+from agent.Agent import Agent
 import numpy as np
 import logging
 import time
@@ -6,19 +6,20 @@ import pytesseract
 import cv2
 import mss
 import re
+import torch
 
 class Game:
-
     def __init__(self):
         self.agent = Agent()
         self.game_steps = 0
+        self.action_space = ["q", "w", "o", "p", "q_o", "q_p", "w_o", "w_p"]
 
     def start(self):
         self.agent.start_game()
         self.game_steps = 0
         return self.execute_action('n')
 
-    def reload(self):
+    def reset(self):
         self.game_steps = 0
         self.agent.hard_reload()
         self.agent.start_game()
@@ -32,18 +33,18 @@ class Game:
         self.agent.start_game()
         self.game_steps += 1
         #self.agent.unpause()
-        for char in action:
-            getattr(self.agent, char)()
+        #for char in action:
+        getattr(self.agent, action)()
         shot = self.get_screen_shot()
         #self.agent.pause()
         done = self.is_done(shot)
-        score = 0.0
+        score = self.get_score()
         if done:
             distance_score = self.get_score()
-            time_score = - (self.game_steps/(abs(distance_score)+1e5)) # The higher the pace, the slowest it goes
-            score = distance_score + time_score
+            #time_score = - (self.game_steps/(abs(distance_score)+1e5)) # The higher the pace, the slowest it goes
+            score = distance_score #+ time_score
             self.soft_reload()
-        return shot.astype(np.float).ravel(), score, done
+        return shot, score, done
 
     def is_done(self, shot):
         # blueidx = shot[:, :] < 24
@@ -70,7 +71,7 @@ class Game:
         #     else:
         #         score = 0
         # return float(score)
-        print(self.agent.get_score())
+        #print(self.agent.get_score())
         return self.agent.get_score()
 
     def get_screen_shot_timed(self):
@@ -81,26 +82,27 @@ class Game:
 
     def get_screen_shot(self, render = False):
         with mss.mss() as sct:
-            shot = sct.grab({"top": 185, "left": 190, "width": 275, "height": 320})
+            shot = sct.grab({"top": 170, "left": 90, "width": 550, "height": 550})
             """
             TODO:
             TEST ONLY GRAYSCALE
             this processing might not be useful since the important data is in the difference between frames
-
+            """
             img = np.array(shot)
-            img[:, :, 2] = 0
-            img[:, :, 1] = 0
-            blueidx = img[:, :, 0] < 24
-            notblueidx = img[:, :, 0] >= 24
-            img[blueidx] = 255
-            img[notblueidx] = 0
-            img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            #img[:, :, 2] = 0
+            #img[:, :, 1] = 0
+            #blueidx = img[:, :, 0] < 24
+            #notblueidx = img[:, :, 0] >= 24
+            #img[blueidx] = 255
+            #img[notblueidx] = 0
+            img_grey = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            img_rgb_resized = cv2.resize(img_grey, (240, 160), interpolation=cv2.INTER_CUBIC)
 
-             """
-            img = np.array(shot)[:,:,0]
-            img = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)
+
+            #img = np.array(shot)[:,:,0]
+            #img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
             if render: self.render(img)
-        return img
+        return img_rgb_resized
 
     def render(self, img):
         cv2.imshow('window', img)
