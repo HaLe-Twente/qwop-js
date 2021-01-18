@@ -9,10 +9,7 @@ class ConvDQN(nn.Module):
         super(ConvDQN, self).__init__()
         self.input_dim = input_dim
         self.output_dim = output_dim
-        self.conv_net = self.get_conv_net(self.input_dim)
-        self.fc_input_dim = self.feature_size()
-
-        self.conv = nn.Sequential(
+        self.cnn_layers = nn.Sequential(
             nn.Conv2d(self.input_dim[0], 32, kernel_size=8, stride=4),
             nn.ReLU(),
             nn.Conv2d(32, 64, kernel_size=4, stride=2),
@@ -20,8 +17,9 @@ class ConvDQN(nn.Module):
             nn.Conv2d(64, 64, kernel_size=3, stride=1),
             nn.ReLU()
         )
+        self.fc_input_dim = self.feature_size()
 
-        self.fc = nn.Sequential(
+        self.linear_layers = nn.Sequential(
             nn.Linear(self.fc_input_dim, 128),
             nn.ReLU(),
             nn.Linear(128, 256),
@@ -30,26 +28,15 @@ class ConvDQN(nn.Module):
         )
 
     def forward(self, state):
-        features = self.conv_net(state)
+        features = self.cnn_layers(state)
         features = features.view(features.size(0), -1)
-        qvals = self.fc(features)
+        qvals = self.linear_layers(features)
         return qvals
 
-    def get_conv_net(self, input_dim):
-        conv = nn.Sequential(
-            nn.Conv2d(input_dim[0], 32, kernel_size=8, stride=4),
-            nn.ReLU(),
-            nn.Conv2d(32, 64, kernel_size=4, stride=2),
-            nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, stride=1),
-            nn.ReLU()
-        )
-        return conv
-
     def feature_size(self):
-        return self.conv_net(autograd.Variable(torch.zeros(1, *self.input_dim))).view(1, -1).size(1)
-
-
+        # feats = self.features(autograd.Variable(torch.zeros(1, *self.input_dim)))
+        # return feats.view(feats.size(0), -1)
+        return self.cnn_layers(autograd.Variable(torch.zeros(1, *self.input_dim))).view(1, -1).size(1)
 
 class DQN(nn.Module):
 

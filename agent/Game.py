@@ -16,46 +16,51 @@ class Game:
     def __init__(self):
         self.agent = Agent()
         self.game_steps = 0
-        self.action_space = ActionSpace(5)
+        self.action_space = ActionSpace(9)
         self.observation_space = ObservationSpace(SPACE) # 640*400*0.25
+        self.old_score = 0
 
     def start(self):
         self.agent.start_game()
         self.game_steps = 0
-        return self.execute_action('n')
+        self.old_score = 0
+        return self.step(4) # n = '4'
 
     def reload(self):
         self.game_steps = 0
+        self.old_score = 0
         self.agent.hard_reload()
         self.agent.start_game()
-        return self.execute_action('n')
+        return self.step(4)
 
     def reset(self):
         self.game_steps = 0
+        self.old_score = 0
         self.agent.hard_reload()
         self.agent.start_game()
-        return self.execute_action('n')[0]
+        return self.step(4)
 
     def soft_reload(self):
         self.game_steps = 0
+        self.old_score = 0
         self.agent.reload()
 
-    def execute_action(self, action):
-        self.agent.start_game()
-        self.game_steps += 1
-        #self.agent.unpause()
-        for char in action:
-            getattr(self.agent, char)()
-        shot = self.get_screen_shot()
-        #self.agent.pause()
-        done = self.is_done(shot)
-        score = 0.0
-        if done:
-            distance_score = self.get_score()
-            time_score = - (self.game_steps/(abs(distance_score)+1e5)) # The higher the pace, the slowest it goes
-            score = distance_score + time_score
-            self.soft_reload()
-        return shot.astype(np.float).ravel(), score, done
+    # def execute_action(self, action):
+    #     self.agent.start_game()
+    #     self.game_steps += 1
+    #     #self.agent.unpause()
+    #     for char in action:
+    #         getattr(self.agent, char)()
+    #     shot = self.get_screen_shot()
+    #     #self.agent.pause()
+    #     done = self.is_done(shot)
+    #     score = 0.0
+    #     if done:
+    #         distance_score = self.get_score()
+    #         time_score = - (self.game_steps/(abs(distance_score)+1e5)) # The higher the pace, the slowest it goes
+    #         score = distance_score + time_score
+    #         self.soft_reload()
+    #     return shot.astype(np.float).ravel(), score, done
 
     def step(self, action):
         self.agent.start_game()
@@ -69,9 +74,11 @@ class Game:
         done = self.is_done(shot)
         distance_score = self.get_score() or 0
         time_score = - (self.game_steps/(abs(distance_score)+1e5)) # The higher the pace, the slowest it goes
-        score = distance_score + time_score
+        score = distance_score -  self.old_score
+        self.old_score = distance_score
         if done:
             self.soft_reload()
+            score = -100
         return shot.astype(np.float).ravel(), score, done
 
     def is_done(self, shot):
@@ -99,7 +106,6 @@ class Game:
         #     else:
         #         score = 0
         # return float(score)
-        print(self.agent.get_score())
         return self.agent.get_score()
 
     def get_screen_shot_timed(self):

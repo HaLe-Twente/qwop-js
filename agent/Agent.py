@@ -31,7 +31,7 @@ class Agent:
         self.keyboard = Controller()
 
     def step(self, action):
-        char = (['q', 'w', 'o', 'p', 'n'])[action]
+        char = (['q', 'w', 'o', 'p', 'n', 'wo', 'qp', 'qo', 'wp'])[action]
         getattr(self, char)()
 
     # no-op
@@ -57,6 +57,35 @@ class Agent:
         self.keyboard.press('p')
         time.sleep(0.08)
         self.keyboard.release('p')
+
+    def wo(self):
+        self.keyboard.press('w')
+        self.keyboard.press('o')
+        time.sleep(0.08)
+        self.keyboard.release('w')
+        self.keyboard.release('o')
+
+    def qp(self):
+        self.keyboard.press('q')
+        self.keyboard.press('p')
+        time.sleep(0.08)
+        self.keyboard.release('q')
+        self.keyboard.release('p')
+
+    def qo(self):
+        self.keyboard.press('q')
+        self.keyboard.press('o')
+        time.sleep(0.08)
+        self.keyboard.release('q')
+        self.keyboard.release('o')
+
+    def wp(self):
+        self.keyboard.press('w')
+        self.keyboard.press('p')
+        time.sleep(0.08)
+        self.keyboard.release('w')
+        self.keyboard.release('p')
+
 
     def r(self):
         choice = np.random.choice(['q','w','o','p'])

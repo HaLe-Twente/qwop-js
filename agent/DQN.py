@@ -13,6 +13,9 @@ class DQNAgent:
         self.learning_rate = learning_rate
         self.gamma = gamma
         self.replay_buffer = BasicBuffer(max_size=buffer_size)
+        self.epsilon = 1
+        self.epsilon_min = 0.01
+        self.epsilon_decay = 0.0005
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -27,19 +30,22 @@ class DQNAgent:
 
         if resume:
             self.model.load_state_dict(torch.load(self.path))
+            self.epsilon = 0.01
             self.model.eval()
 
         self.optimizer = torch.optim.Adam(self.model.parameters())
         self.MSE_loss = nn.MSELoss()
 
-    def get_action(self, state, eps=0.20):
+    def get_action(self, state, eps=0.2):
         state = torch.FloatTensor(state).float().unsqueeze(0).to(self.device)
         qvals = self.model.forward(state)
         action = np.argmax(qvals.cpu().detach().numpy())
 
-        if(np.random.randn() < eps):
+        if self.epsilon > self.epsilon_min:
+            self.epsilon *= (1-self.epsilon_decay)
+        if(np.random.randn() < self.epsilon):
             return self.env.action_space.sample()
-
+        print(action)
         return action
 
     def compute_loss(self, batch):
