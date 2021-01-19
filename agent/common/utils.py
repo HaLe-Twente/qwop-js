@@ -97,7 +97,10 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
                 break
 
             state = next_state
-    agent.save_model()
+        if episode % 99 == 0:
+            agent.save_model()
+            print("Episode " + str(episode))
+            print("Epsilon " + str(agent.epsilon))
     return episode_rewards
 
 def mini_batch_train_frames(env, agent, max_frames, batch_size):

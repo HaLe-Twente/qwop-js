@@ -30,7 +30,7 @@ class DQNAgent:
 
         if resume:
             self.model.load_state_dict(torch.load(self.path))
-            self.epsilon = 0.01
+            self.epsilon = 0.001
             self.model.eval()
 
         self.optimizer = torch.optim.Adam(self.model.parameters())
@@ -45,7 +45,6 @@ class DQNAgent:
             self.epsilon *= (1-self.epsilon_decay)
         if(np.random.randn() < self.epsilon):
             return self.env.action_space.sample()
-        print(action)
         return action
 
     def compute_loss(self, batch):
