@@ -16,6 +16,7 @@ import random
 class DNQAgent:
     def __init__(self, env, net):
         self.env = env
+        self.GAMMA = 0.999
         self.ROWS = 160
         self.COLS = 240
         self.REM_STEP = 4
@@ -57,12 +58,16 @@ class DNQAgent:
             batch = (self.buffer.sample(sample_size))
             state_batch, action_batch, reward_batch, next_state_batch, done_batch = batch
             print("works1")
+            #print(action_batch)
             non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
                                                     next_state_batch)), dtype=torch.bool)
             print("works2")
+            #print(non_final_mask)
             non_final_next_states = torch.cat([s for s in next_state_batch
                                                if s is not None])
             print("works3")
+            #print(non_final_next_states)
+
             state_action_values = []
             for state in state_batch:
                 state_action_values.append(self.net(torch.unsqueeze(state, 0).float()))#.gather(1, action_batch))
@@ -104,7 +109,7 @@ class DNQAgent:
 
                 if done:
                     break
-            #self.train(2)
+            self.train(2)
 
 
 
