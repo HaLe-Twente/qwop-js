@@ -10,8 +10,6 @@ class Agent:
 
     def __init__(self):
         chrome_opts = Options()
-
-        # REFER TO https://github.com/zalando/zalenium/issues/497 for enabling flash in docker
         chrome_opts.add_argument('--disable-features=EnableEphemeralFlashPermission')
         chrome_opts.add_argument('--disable-infobars')
         chrome_opts.add_argument("--ppapi-flash-version=32.0.0.101")
