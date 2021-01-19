@@ -30,6 +30,10 @@ class Agent:
         self.is_paused = False
         self.keyboard = Controller()
 
+    def step(self, action):
+        char = (['q', 'w', 'o', 'p', 'n', 'w_o', 'q_p', 'q_o', 'w_p'])[action]
+        getattr(self, char)()
+
     # no-op
     def n(self):
         return

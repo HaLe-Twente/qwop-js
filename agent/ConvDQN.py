@@ -5,15 +5,15 @@ import torch.optim as optim
 import torch.autograd as autograd
 
 
-class ConvDNQ(nn.Module):
+class ConvDQN(nn.Module):
     def __init__(self):
-        super(ConvDNQ, self).__init__()
+        super(ConvDQN, self).__init__()
 
         self.conf1 = nn.Conv2d(4, 32, 8, 4)
         self.conf2 = nn.Conv2d(32, 64, 4, 2)
         self.conf3 = nn.Conv2d(64, 64, 3, 1)
         self.linear1 = nn.Linear(26624, 512)
-        self.linear2 = nn.Linear(512, 8)
+        self.linear2 = nn.Linear(512, 9)
 
     def forward(self, x):
 

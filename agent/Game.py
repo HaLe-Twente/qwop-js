@@ -1,4 +1,5 @@
 from agent.Agent import Agent
+from GameEnv import ActionSpace, ObservationSpace
 import numpy as np
 import logging
 import time
@@ -12,18 +13,19 @@ class Game:
     def __init__(self):
         self.agent = Agent()
         self.game_steps = 0
-        self.action_space = ["q", "w", "o", "p", "q_o", "q_p", "w_o", "w_p"]
+        self.action_space = ActionSpace(9)
+        #self.observation_space = ObservationSpace(SPACE)  # 640*400*0.25
 
     def start(self):
         self.agent.start_game()
         self.game_steps = 0
-        return self.execute_action('n')
+        return self.execute_action(5)#'n')
 
     def reset(self):
         self.game_steps = 0
         self.agent.hard_reload()
         self.agent.start_game()
-        return self.execute_action('n')
+        return self.execute_action(5)#'n')
 
     def soft_reload(self):
         self.game_steps = 0
@@ -34,7 +36,8 @@ class Game:
         self.game_steps += 1
         #self.agent.unpause()
         #for char in action:
-        getattr(self.agent, action)()
+        #getattr(self.agent, action)()
+        self.agent.step(action)
         shot = self.get_screen_shot()
         #self.agent.pause()
         done = self.is_done(shot)

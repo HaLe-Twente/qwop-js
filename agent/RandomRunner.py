@@ -8,13 +8,13 @@ def main():
     game.start()
 
     while True:
-        observation, reward, done = game.execute_action("r")
+        observation, reward, done = game.execute_action(game.action_space.sample())
         #print(reward)
         if done:
             plt.imshow(observation)
             plt.show()
             print(f'reward {reward}')
-            game.reload()
+            game.reset()
 
 if __name__ == '__main__':
     main()
