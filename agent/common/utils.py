@@ -12,11 +12,11 @@ import matplotlib.pyplot as plt
 def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
     episode_rewards = []
     episodes = []
+    velocities = []
     scores = []
     state = torch.from_numpy(np.zeros((4, 160, 240)))
     f = open('states/best_record.txt')
     best_record = float(f.readline())
-    print('best_record', best_record)
     f.close()
 
     for episode in range(max_episodes):
@@ -43,8 +43,9 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
                 print("Episode " + str(episode) + ": Reward = " + str(episode_reward))
                 print("Episode " + str(episode) + ": Score = " + str(score))
                 print("Episode " + str(episode) + ": Epsilon = " + str(agent.epsilon))
+                finish_time = (end_time - start_time).total_seconds()
+                velocities.append(score/finish_time)
                 if score >= 100:
-                    finish_time = (end_time - start_time).total_seconds()
                     if finish_time < best_record:
                         best_record = finish_time
                 break
@@ -57,13 +58,15 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
     f.write(separator.join(str(n) for n in episodes))
     f.write('\n')
     f.write(separator.join(str(n) for n in scores))
+    f.write('\n')
+    f.write(separator.join(str(n) for n in velocities))
     f.close()
     plt.scatter(episodes, scores, s=1)
     plt.xlabel('Episodes')
     plt.ylabel('Scores')
     plt.xticks(np.arange(0, max_episodes, 1), np.arange(0, max_episodes, 1))
     plt.title('Deep Q-Learning Agent')
-    plt.savefig('rewards-episodes-'+ date +'.png')
+    plt.savefig('states/scores-'+ date +'.png')
     f = open('states/best_record.txt', "w")
     f.write(str(best_record))
     f.close()

@@ -3,3 +3,4 @@ agent/venv
 game/node_modules
 agent/__pycache__
 agent/saved-models
+agent/states
