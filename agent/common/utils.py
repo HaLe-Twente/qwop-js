@@ -40,9 +40,10 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
                 score = env.result
                 scores.append(score)
                 episode_rewards.append(episode_reward)
-                print("Episode " + str(episode) + ": Reward = " + str(episode_reward) +  ", Score = " + str(score)+ ", Epsilon = " + str(agent.epsilon))
                 finish_time = (end_time - start_time).total_seconds()
-                velocities.append(score/finish_time)
+                v = score/finish_time
+                velocities.append(v)
+                print("Episode " + str(episode) + ": Reward = " + str(episode_reward) +  ", Score = " + str(score) + ", Velocity = " + str(v)+ ", Epsilon = " + str(agent.epsilon))
                 if score >= 100:
                     if finish_time < best_record:
                         best_record = finish_time
