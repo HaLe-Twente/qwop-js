@@ -14,8 +14,9 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
     episodes = []
     scores = []
     state = torch.from_numpy(np.zeros((4, 160, 240)))
-    f = open('best_record.txt')
+    f = open('states/best_record.txt')
     best_record = float(f.readline())
+    print('best_record', best_record)
     f.close()
 
     for episode in range(max_episodes):
@@ -50,15 +51,20 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
 
         if episode % 10 == 0:
             agent.save_model()
-
     date = datetime.now().strftime("%b-%d-%Y-%H-%M-%S")
+    f = open("states/scores-"+ date +'.txt', "w")
+    separator = ', '
+    f.write(separator.join(str(n) for n in episodes))
+    f.write('\n')
+    f.write(separator.join(str(n) for n in scores))
+    f.close()
     plt.scatter(episodes, scores, s=1)
     plt.xlabel('Episodes')
     plt.ylabel('Scores')
     plt.xticks(np.arange(0, max_episodes, 1), np.arange(0, max_episodes, 1))
     plt.title('Deep Q-Learning Agent')
-    plt.savefig('rewards-episodes'+ date +'.png')
-    f = open('best_record.txt', "w")
+    plt.savefig('rewards-episodes-'+ date +'.png')
+    f = open('states/best_record.txt', "w")
     f.write(str(best_record))
     f.close()
 

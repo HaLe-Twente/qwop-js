@@ -2,10 +2,8 @@ import torch
 import torch.nn as nn
 import torch.autograd as autograd
 import numpy as np
-from datetime import date
+from datetime import datetime
 from ReplayBuffer import ReplayBuffer
-from common.replay_buffers import BasicBuffer
-#from Model import ConvDQN, DQN
 from CNN import CNN
 
 class DQNAgent:
@@ -16,23 +14,23 @@ class DQNAgent:
         self.gamma = gamma
         self.replay_buffer = ReplayBuffer(capacity=buffer_size)
         self.epsilon = 1
-        self.epsilon_min = 0.01
+        self.epsilon_min = 0.001
         self.epsilon_decay = 0.0005
         self.losses = []
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.path = 'saved-models/qwop_cnn.game.model'
-        self.model = CNN() #ConvDQN(env.observation_space.shape, env.action_space.n).to(self.device)
-        self.date = date.today().strftime("%b-%d-%Y")
-        self.save_path = 'saved-models/'+ self.date +'qwop_cnn.game'+ '.model'
+        self.model = CNN()
+        self.date = datetime.now().strftime("%b-%d-%Y-%H-%M-%S")
+        self.save_path = 'saved-models/'+ self.date +'-qwop_cnn.game'+ '.model'
 
         if resume:
             self.model.load_state_dict(torch.load(self.path))
-            f = open('epsilon_decay.txt')
+            self.model.eval()
+            f = open('states/epsilon_decay.txt')
             self.epsilon = float(f.readline())
             f.close()
-            self.model.eval()
 
         self.optimizer = torch.optim.Adam(self.model.parameters())
         self.MSE_loss = nn.MSELoss()
@@ -99,7 +97,7 @@ class DQNAgent:
 
     def save_model(self):
         torch.save(self.model.state_dict(), self.save_path)
-        f = open("epsilon_decay_"+ self.date +'.txt', "w")
+        f = open("states/epsilon_decay_"+ self.date +'.txt', "w")
         f.write(str(self.epsilon))
         f.close()
 
