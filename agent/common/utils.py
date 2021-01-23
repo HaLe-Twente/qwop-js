@@ -44,9 +44,7 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
                 v = score/finish_time
                 velocities.append(v)
                 print("Episode " + str(episode) + ": Reward = " + str(episode_reward) +  ", Score = " + str(score) + ", Velocity = " + str(v)+ ", Epsilon = " + str(agent.epsilon))
-                prev_state = state
-                observation, _, _ = env.soft_reload()
-                state = torch.cat((state[1:], torch.from_numpy(np.array([observation]))), axis=0)
+                env.reset()
                 if score >= 100:
                     if finish_time < best_record:
                         best_record = finish_time
