@@ -86,7 +86,6 @@ class DQNAgent:
         try:
             batch = self.replay_buffer.sample(batch_size)
             loss = self.compute_loss(batch)
-            print(loss.item())
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()

@@ -11,7 +11,7 @@ def main():
     env.start()
     agent = DQNAgent(env)
     MAX_EPISODES = 500
-    MAX_STEPS = 500
+    MAX_STEPS = 5000
     BATCH_SIZE = 32
     episode_rewards = mini_batch_train(env, agent, MAX_EPISODES, MAX_STEPS, BATCH_SIZE)
 
