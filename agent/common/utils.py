@@ -14,14 +14,14 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
     episodes = []
     velocities = []
     scores = []
-    state = torch.from_numpy(np.zeros((4, 160, 240)))
     f = open('states/best_record.txt')
     best_record = float(f.readline())
     f.close()
+    date = datetime.now().strftime("%b-%d-%Y-%H-%M-%S")
+    state = torch.from_numpy(np.zeros((4, 160, 240)))
     for episode in range(1, max_episodes + 1):
         episode_reward = 0
         start_time = datetime.now()
-
         for step in range(max_steps):
             action = agent.get_action(state)
             observation, reward, done = env.step(action)
@@ -44,6 +44,9 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
                 v = score/finish_time
                 velocities.append(v)
                 print("Episode " + str(episode) + ": Reward = " + str(episode_reward) +  ", Score = " + str(score) + ", Velocity = " + str(v)+ ", Epsilon = " + str(agent.epsilon))
+                prev_state = state
+                observation, _, _ = env.reset()
+                state = torch.cat((state[1:], torch.from_numpy(np.array([observation]))), axis=0)
                 if score >= 100:
                     if finish_time < best_record:
                         best_record = finish_time

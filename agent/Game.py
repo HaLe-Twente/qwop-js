@@ -75,7 +75,7 @@ class Game:
         print(time.time() - start)
         return img
 
-    def get_screen_shot(self, render = True):
+    def get_screen_shot(self, render = False):
         with mss.mss() as sct:
             monitor = {"top": 175, "left": 20, "width": WIDTH, "height": HEIGT}
             shot = sct.grab(monitor)

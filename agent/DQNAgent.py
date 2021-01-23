@@ -4,6 +4,7 @@ import torch.autograd as autograd
 import numpy as np
 from datetime import datetime
 from ReplayBuffer import ReplayBuffer
+from common.replay_buffers import BasicBuffer
 from CNN import CNN
 
 class DQNAgent:
@@ -12,7 +13,7 @@ class DQNAgent:
         self.env = env
         self.learning_rate = learning_rate
         self.gamma = gamma
-        self.replay_buffer = ReplayBuffer(capacity=buffer_size)
+        self.replay_buffer = BasicBuffer(max_size=buffer_size)
         self.epsilon = 1
         self.epsilon_min = 0.001
         self.epsilon_decay = 0.0005
@@ -69,27 +70,29 @@ class DQNAgent:
         next_Q = next_Q.squeeze(1)
         max_next_Q = torch.max(next_Q, 1)[0]
 
-        expected_Q = self.gamma * max_next_Q + rewards
+        expected_Q = rewards.squeeze(1) + (1 - dones) * self.gamma * max_next_Q
 
         # print("curr:", curr_Q)
         # print("next:", next_Q)
         # print("max:", max_next_Q)
         # print("exp:", expected_Q)
+        curr_Q = curr_Q.squeeze(1)
         curr_Q.requires_grad_()
         expected_Q.requires_grad_()
-        curr_Q1 = torch.squeeze(curr_Q)
-        loss = self.MSE_loss(curr_Q1, expected_Q)
+        loss = self.MSE_loss(curr_Q, expected_Q)
         return loss
 
     def update(self, batch_size):
         try:
             batch = self.replay_buffer.sample(batch_size)
             loss = self.compute_loss(batch)
+            print(loss.item())
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
             self.losses.append(loss.item())
         except ValueError:
+            print('Error')
             pass
 
     def update_buffer(self, prev_state, action, reward, next_state, done):
