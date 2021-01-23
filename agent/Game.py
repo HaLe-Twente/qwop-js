@@ -1,4 +1,5 @@
 from agent.Agent import Agent
+from agent.Agent2 import Agent2
 from GameEnv import ActionSpace, ObservationSpace
 import numpy as np
 import logging
@@ -11,21 +12,26 @@ import torch
 
 class Game:
     def __init__(self):
-        self.agent = Agent()
+        self.agent = Agent2()
         self.game_steps = 0
-        self.action_space = ActionSpace(9)
+        self.action_space = ActionSpace(5)
+        self.t_start = 0
         #self.observation_space = ObservationSpace(SPACE)  # 640*400*0.25
 
     def start(self):
+        self.t_start = time.time()
+        print(self.t_start)
         self.agent.start_game()
         self.game_steps = 0
-        return self.execute_action(5)#'n')
+        return self.agent.space()#self.execute_action(5)#'n')
 
     def reset(self):
+        self.t_start = time.time()
+        print(self.t_start)
         self.game_steps = 0
         self.agent.hard_reload()
         self.agent.start_game()
-        return self.execute_action(5)#'n')
+        return self.agent.space()#self.execute_action(5)#'n')
 
     def soft_reload(self):
         self.game_steps = 0
@@ -42,6 +48,7 @@ class Game:
         #self.agent.pause()
         done = self.is_done(shot)
         score = self.get_score()
+        t_diff = time.time()-self.t_start
         if done:
             distance_score = self.get_score()
             #time_score = - (self.game_steps/(abs(distance_score)+1e5)) # The higher the pace, the slowest it goes

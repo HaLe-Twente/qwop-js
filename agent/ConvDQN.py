@@ -13,7 +13,7 @@ class ConvDQN(nn.Module):
         self.conf2 = nn.Conv2d(32, 64, 4, 2)
         self.conf3 = nn.Conv2d(64, 64, 3, 1)
         self.linear1 = nn.Linear(26624, 512)
-        self.linear2 = nn.Linear(512, 9)
+        self.linear2 = nn.Linear(512, 4)
 
     def forward(self, x):
 

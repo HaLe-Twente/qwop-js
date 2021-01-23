@@ -41,18 +41,19 @@ class DQNAgent:
         state = torch.unsqueeze(state, 0).float().to(self.device)
         #state = torch.FloatTensor(state).float().unsqueeze(0).to(self.device)
         qvals = self.model.forward(state)
-        action = np.argmax(qvals.cpu().detach().numpy())
+        action = qvals.tolist()[0]#np.argmax(qvals.cpu().detach().numpy())
+
 
         if self.epsilon > self.epsilon_min:
             self.epsilon *= (1-self.epsilon_decay)
         if(np.random.randn() < self.epsilon):
-            return self.env.action_space.sample()
+            action = self.env.action_space.sample()
         return action
 
     def compute_loss(self, batch):
         states, actions, rewards, next_states, dones = batch
         #states = torch.FloatTensor(states).to(self.device)
-        actions = torch.LongTensor(actions).to(self.device)
+        #actions = torch.LongTensor(actions).to(self.device)
         rewards = torch.FloatTensor(rewards).to(self.device)
         #next_states = torch.FloatTensor(next_states).to(self.device)
         dones = torch.FloatTensor(dones)

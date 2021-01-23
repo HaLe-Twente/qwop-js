@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 class ActionSpace:
     """docstring for ActionSpace"""
@@ -6,7 +7,10 @@ class ActionSpace:
         self.n = n
 
     def sample(self):
-        return random.randint(0, self.n-1)
+        result = []
+        for i in range(self.n):
+            result.append(random.random()-0.5)
+        return result #random.randint(0, self.n-1)
 
 class ObservationSpace:
     def __init__(self, shape):
