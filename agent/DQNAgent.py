@@ -41,7 +41,8 @@ class DQNAgent:
         state = torch.unsqueeze(state, 0).float().to(self.device)
         #state = torch.FloatTensor(state).float().unsqueeze(0).to(self.device)
         qvals = self.model.forward(state)
-        action = qvals.tolist()[0]#np.argmax(qvals.cpu().detach().numpy())
+        #action = qvals.tolist()[0]
+        action = np.argmax(qvals.cpu().detach().numpy())
 
 
         if self.epsilon > self.epsilon_min:
@@ -60,17 +61,23 @@ class DQNAgent:
 
         curr_Q = []
         next_Q = []
-        for old, new in states, next_states:
+        for old, new in zip(states, next_states):
             curr_Q_state = self.model.forward(torch.unsqueeze(old, 0).float())#.gather(1, actions.unsqueeze(1))
             next_Q_state = self.model.forward(torch.unsqueeze(new, 0).float())
-            curr_Q.append(curr_Q_state.tolist())
-            next_Q.append(next_Q_state.tolist())
+            curr_Q.append(curr_Q_state.tolist()[0])
+            next_Q.append(next_Q_state.tolist()[0])
+
 
         curr_Q = torch.FloatTensor(curr_Q)
         next_Q = torch.FloatTensor(next_Q)
+
+
+        #actions = torch.FloatTensor(actions)
+        curr_Q = curr_Q.squeeze(1)
+
         print("curr:", curr_Q)
         print("action:", actions)
-        curr_Q = curr_Q.squeeze(1)
+
         curr_Q = curr_Q.gather(1, actions.unsqueeze(1))
         next_Q = next_Q.squeeze(1)
         max_next_Q = torch.max(next_Q, 1)[0]
@@ -88,15 +95,16 @@ class DQNAgent:
         return loss
 
     def update(self, batch_size):
-        try:
+        #try:
             batch = self.replay_buffer.sample(batch_size)
             loss = self.compute_loss(batch)
             print("loss: ", loss)
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
-        except ValueError:
-            pass
+        #except ValueError:
+            #print("Not enough RP memory")
+            #pass
 
     def update_buffer(self, prev_state, action, reward, next_state, done):
         self.replay_buffer.push(prev_state, action, reward, next_state, done)

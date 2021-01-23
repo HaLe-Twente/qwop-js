@@ -12,9 +12,9 @@ import torch
 
 class Game:
     def __init__(self):
-        self.agent = Agent2()
+        self.agent = Agent()
         self.game_steps = 0
-        self.action_space = ActionSpace(5)
+        self.action_space = ActionSpace(9)
         self.t_start = 0
         #self.observation_space = ObservationSpace(SPACE)  # 640*400*0.25
 

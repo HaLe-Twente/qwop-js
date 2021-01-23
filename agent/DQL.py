@@ -11,6 +11,8 @@ def main():
     agent = DQNAgent(env)
     state = torch.from_numpy(np.zeros((4, 160, 240)))
     exp_set = set()
+
+
     while True:
         action = agent.get_action(state)
         observation, reward, done = env.execute_action(action)
@@ -19,7 +21,7 @@ def main():
         state = torch.cat((state[1:], torch.from_numpy(np.array([observation]))), axis=0)
         experience = (prev_state, torch.from_numpy(np.array(action)), reward, state, done)
         exp_set.add(experience)
-        #agent.update_buffer()
+        agent.update_buffer(prev_state, action, reward, state, done)
 
         if done:
             exp_set = set()
