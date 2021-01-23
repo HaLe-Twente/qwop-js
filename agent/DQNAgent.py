@@ -77,18 +77,18 @@ class DQNAgent:
         # print("exp:", expected_Q)
         curr_Q.requires_grad_()
         expected_Q.requires_grad_()
-
-        loss = self.MSE_loss(curr_Q[1], expected_Q)
+        curr_Q1 = torch.squeeze(curr_Q)
+        loss = self.MSE_loss(curr_Q1, expected_Q)
         return loss
 
     def update(self, batch_size):
         try:
             batch = self.replay_buffer.sample(batch_size)
             loss = self.compute_loss(batch)
-            self.losses.append(loss)
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
+            self.losses.append(loss.item())
         except ValueError:
             pass
 

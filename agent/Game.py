@@ -75,15 +75,16 @@ class Game:
         print(time.time() - start)
         return img
 
-    def get_screen_shot(self, render = False):
+    def get_screen_shot(self, render = True):
         with mss.mss() as sct:
             monitor = {"top": 175, "left": 20, "width": WIDTH, "height": HEIGT}
             shot = sct.grab(monitor)
             img = np.array(shot)
             img_grey = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
             img_rgb_resized = cv2.resize(img_grey, (240, 160), interpolation=cv2.INTER_CUBIC)
-            if render: self.render(img)
+            if render: self.render(img_rgb_resized)
         return img_rgb_resized
 
     def render(self, img):
+        cv2.imshow('window', img)
         cv2.waitKey(1)

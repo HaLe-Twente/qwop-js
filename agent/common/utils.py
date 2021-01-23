@@ -18,10 +18,10 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
     f = open('states/best_record.txt')
     best_record = float(f.readline())
     f.close()
-
-    for episode in range(max_episodes):
+    for episode in range(1, max_episodes + 1):
         episode_reward = 0
         start_time = datetime.now()
+
         for step in range(max_steps):
             action = agent.get_action(state)
             observation, reward, done = env.step(action)
@@ -50,25 +50,36 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
                         print("Break Record: " + str(best_record))
                 break
 
-        if episode % 10 == 0:
-            agent.save_model()
-    date = datetime.now().strftime("%b-%d-%Y-%H-%M-%S")
-    f = open("states/scores-"+ date +'.txt', "w")
-    separator = ', '
-    f.write(separator.join(str(n) for n in episodes))
-    f.write('\n')
-    f.write(separator.join(str(n) for n in scores))
-    f.write('\n')
-    f.write(separator.join(str(n) for n in velocities))
-    f.close()
+        if episode % 50 == 0:
+            try:
+                date = datetime.now().strftime("%b-%d-%Y-%H-%M-%S")
+                agent.save_model()
+                f = open("states/scores-"+ date +'.txt', "w")
+                separator = ', '
+                f.write("Episode: " + str(episode))
+                f.write('\n')
+                f.write(separator.join(str(n) for n in episodes))
+                f.write('\n')
+                f.write(separator.join(str(n) for n in scores))
+                f.write('\n')
+                f.write(separator.join(str(n) for n in velocities))
+                f.close()
+                br = open('states/best_record.txt', "w")
+                br.write(str(best_record))
+                br.close()
+                f = open("states/loss-"+ date +'.txt', "w")
+                f.write("Episode: " + str(episode))
+                f.write('\n')
+                f.write(separator.join(str(n) for n in agent.losses))
+                f.close()
+                agent.losses = []
+            except ValueError:
+                pass
+
     plt.scatter(episodes, scores, s=1)
     plt.xlabel('Episodes')
     plt.ylabel('Scores')
-    plt.xticks(np.arange(0, max_episodes, 1), np.arange(0, max_episodes, 1))
+    plt.xticks(np.arange(0, max_episodes+1, 100), np.arange(0, max_episodes+1, 100))
     plt.title('Deep Q-Learning Agent')
     plt.savefig('states/scores-'+ date +'.png')
-    f = open('states/best_record.txt', "w")
-    f.write(str(best_record))
-    f.close()
-
     return episode_rewards
