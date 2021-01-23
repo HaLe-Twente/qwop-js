@@ -45,7 +45,8 @@ class Game:
     def soft_reload(self):
         self.game_steps = 0
         self.old_score = 0
-        return self.agent.reload()
+        self.agent.reload()
+        return self.step(4)
 
     def step(self, action):
         self.agent.start_game()
